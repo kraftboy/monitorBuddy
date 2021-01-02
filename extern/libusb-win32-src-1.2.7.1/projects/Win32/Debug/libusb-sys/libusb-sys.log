@@ -1,4 +1,0 @@
-﻿  Libusb-Win32 directory = C:\Users\g\source\repos\monitorBuddy\extern\libusb-win32-src-1.2.7.1\
-  Failed locating WinDDK setenv.bat at 'C:\Program Files (x86)\Windows Kits\10\bin\setenv.bat'
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.MakeFile.Targets(46,5): error MSB3073: The command "CD "C:\Users\g\source\repos\monitorBuddy\extern\libusb-win32-src-1.2.7.1\projects\..\ddk_make"
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.MakeFile.Targets(46,5): error MSB3073: CMD /C make.cmd "arch=x86" "app=driver" "noclean=true" "outdir=C:\Users\g\source\repos\monitorBuddy\extern\libusb-win32-src-1.2.7.1\projects\Win32\Debug\libusb-sys\" "DIR_INTERMEDIATE=C:\Users\g\source\repos\monitorBuddy\extern\libusb-win32-src-1.2.7.1\projects\Win32\Debug\libusb-sys\" "debugmode=true"" exited with code 1.

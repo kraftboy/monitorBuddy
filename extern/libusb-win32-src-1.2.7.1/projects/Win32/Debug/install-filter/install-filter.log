@@ -1,8 +1,0 @@
-﻿cl : command line warning D9035: option 'Gm' has been deprecated and will be removed in a future release
-  registry.c
-  install_filter.c
-  install.c
-  error.c
-  Generating Code...
-error.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
-  install-filter.vcxproj -> C:\Users\g\source\repos\monitorBuddy\extern\libusb-win32-src-1.2.7.1\projects\Win32\Debug\install-filter\install-filter.exe
