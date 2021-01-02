@@ -1,0 +1,10 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppCommon.targets(37,5): warning MSB4211: The property "IntermediateOutputPath" is being set to a value for the first time, but it was already consumed at "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppCommon.targets (36,5)".
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\Microsoft.Common.CurrentVersion.targets(340,5): warning MSB4211: The property "CleanFile" is being set to a value for the first time, but it was already consumed at "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppCommon.targets (36,5)".
+  Embedding binary resources
+  No user embeddable files found.
+  Note that the USER_DIR path must be provided in Windows format
+  (eg: 'C:\signed-driver').if compiling from a Windows platform.
+  Couldn't open file 'Z:\packages\libusb-win32\bin\x86\libusb0_x86.dll'.
+    Embedding 'Z:\packages\libusb-win32\bin\x86\libusb0_x86.dll' 
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppCommon.targets(143,5): error MSB3073: The command "C:\Users\g\source\repos\monitorBuddy\extern\libusb-win32-src-1.2.7.1\projects\Win32\Debug\lib\\..\helper\embedder C:\Users\g\source\repos\monitorBuddy\extern\libusb-win32-src-1.2.7.1\projects\additional\libwdi\libwdi\\embedded.h
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppCommon.targets(143,5): error MSB3073: :VCEnd" exited with code 1.

@@ -1,0 +1,22 @@
+---------------------------------------------------------------------------
+NCDrill File Report For: MonitorBuddy.CMPcbDoc   2020-12-30  3:30:02 PM
+---------------------------------------------------------------------------
+
+Layer Pair : Top Layer to Bottom Layer
+ASCII RoundHoles File : MonitorBuddy-RoundHoles.TXT
+ASCII SlotHoles File : MonitorBuddy-SlotHoles.TXT
+
+Tool         Hole Size           Hole Type     Hole Count Plated       Tool Travel
+---------------------------------------------------------------------------
+T1        28mil (0.7112mm)         Round          2                0.14 Inch (3.56 mm)
+T2        39.37mil (1mm)           Round          5                1.02 Inch (25.80 mm)
+T3        40mil (1.016mm)          Round          29               3.30 Inch (83.82 mm)
+T4        43.31mil (1.10007mm)     Round          4                0.60 Inch (15.21 mm)
+T5        50mil (1.27mm)           Round          3                0.20 Inch (5.08 mm)
+T6        94.49mil (2.40005mm)     Round          4                6.23 Inch (158.24 mm)
+T7        108.27mil (2.75006mm)    Round          1                0.00 Inch (0.00 mm)
+T8        108.27mil (2.75006mm)    Slot           1                287.87 Inch (7311.92 mm)
+---------------------------------------------------------------------------
+Totals                                            49               299.36 Inch (7603.63 mm)
+
+Total Processing Time (hh:mm:ss) : 00:00:00

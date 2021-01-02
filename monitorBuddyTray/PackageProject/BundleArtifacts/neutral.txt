@@ -1,0 +1,6 @@
+MainPackage=C:\Users\g\source\repos\monitorBuddy\monitorBuddyTray\PackageProject\bin\AnyCPU\Debug\PackageProject_1.0.2.0_AnyCPU_Debug.appx
+SymbolPackage=C:\Users\g\source\repos\monitorBuddy\monitorBuddyTray\PackageProject\obj\Debug\Symbols\PackageProject_1.0.2.0_AnyCPU_Debug.appxsym
+ResourcePack=C:\Users\g\source\repos\monitorBuddy\monitorBuddyTray\PackageProject\bin\AnyCPU\Debug\PackageProject_1.0.2.0_scale-100.appx
+ResourcePack=C:\Users\g\source\repos\monitorBuddy\monitorBuddyTray\PackageProject\bin\AnyCPU\Debug\PackageProject_1.0.2.0_scale-125.appx
+ResourcePack=C:\Users\g\source\repos\monitorBuddy\monitorBuddyTray\PackageProject\bin\AnyCPU\Debug\PackageProject_1.0.2.0_scale-150.appx
+ResourcePack=C:\Users\g\source\repos\monitorBuddy\monitorBuddyTray\PackageProject\bin\AnyCPU\Debug\PackageProject_1.0.2.0_scale-400.appx

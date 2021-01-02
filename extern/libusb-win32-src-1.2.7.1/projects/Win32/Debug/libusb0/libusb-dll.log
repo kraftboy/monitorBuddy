@@ -1,0 +1,11 @@
+﻿cl : command line warning D9035: option 'Gm' has been deprecated and will be removed in a future release
+  windows.c
+  usb.c
+  registry.c
+  install.c
+  error.c
+  descriptors.c
+  Generating Code...
+descriptors.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
+     Creating library C:\Users\g\source\repos\monitorBuddy\extern\libusb-win32-src-1.2.7.1\projects\Win32\Debug\libusb0\libusb0.lib and object C:\Users\g\source\repos\monitorBuddy\extern\libusb-win32-src-1.2.7.1\projects\Win32\Debug\libusb0\libusb0.exp
+  libusb-dll.vcxproj -> C:\Users\g\source\repos\monitorBuddy\extern\libusb-win32-src-1.2.7.1\projects\Win32\Debug\libusb0\libusb0.dll

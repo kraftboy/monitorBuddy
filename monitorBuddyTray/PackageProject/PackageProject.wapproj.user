@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Source>C:\Users\g\source\repos\monitorBuddy\monitorBuddyTray\assets\logo.png</Source>
+    <SmallTileSource>C:\Users\g\source\repos\monitorBuddy\monitorBuddyTray\assets\logo.png</SmallTileSource>
+    <MediumTileSource>C:\Users\g\source\repos\monitorBuddy\monitorBuddyTray\assets\logo.png</MediumTileSource>
+    <WideTileSource>C:\Users\g\source\repos\monitorBuddy\monitorBuddyTray\assets\logo.png</WideTileSource>
+    <LargeTileSource>C:\Users\g\source\repos\monitorBuddy\monitorBuddyTray\assets\logo.png</LargeTileSource>
+    <AppIconSource>C:\Users\g\source\repos\monitorBuddy\monitorBuddyTray\assets\logo.png</AppIconSource>
+    <SplashScreenSource>C:\Users\g\source\repos\monitorBuddy\monitorBuddyTray\assets\logo.png</SplashScreenSource>
+    <PackageLogoSource>C:\Users\g\source\repos\monitorBuddy\monitorBuddyTray\assets\logo.png</PackageLogoSource>
+    <UapAppxPackageBuildMode>SideloadOnly</UapAppxPackageBuildMode>
+    <AppxShowAllApps>False</AppxShowAllApps>
+    <AppxBuildConfigurationSelection>neutral</AppxBuildConfigurationSelection>
+    <PackageOptionalProjectsInIdeBuilds>False</PackageOptionalProjectsInIdeBuilds>
+  </PropertyGroup>
+</Project>
