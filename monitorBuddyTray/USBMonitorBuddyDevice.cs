@@ -12,6 +12,7 @@ namespace monitorBuddyTray
     class USBMonitorBuddyDevice : IDisposable
     {
         UsbEndpointReader endpointReader = null;
+
         IUsbDevice device = null;
         IUsbDevice monitorBuddyDevice = null;
         byte[] endpointBuffer = new byte[1];
@@ -71,38 +72,12 @@ namespace monitorBuddyTray
                             }
 
                             int bytesRead = 0;
-                            var result = endpointReader.Read(endpointBuffer, 0, out bytesRead);
+                            var result = endpointReader.Read(endpointBuffer, 500, out bytesRead);
                             if (result == LibUsbDotNet.Error.Success)
                             {
-                                if (endpointBuffer[0] != endpointBufferTmp[0])
+                                if (endpointBuffer[0] != endpointBufferTmp[0] && endpointBuffer[0] == 1)
                                 {
-                                    endpointBuffer[0] = endpointBufferTmp[0];
-                                    Console.WriteLine($"Value changed: {endpointBufferTmp[0]}");
-
-                                    try
-                                    {
-                                        ToastContent toastContent = new ToastContentBuilder()
-                                            .AddText("Device changed!")
-                                            .AddAudio(new ToastAudio()
-                                            {
-                                                Silent = true
-                                            })
-                                            .GetToastContent();
-
-                                        // And create the toast notification
-                                        var toast = new ToastNotification(toastContent.GetXml())
-                                        {
-                                            Tag = "ChangedDevice",
-                                            ExpirationTime = DateTime.Now.AddSeconds(10)
-                                        };
-
-                                        // And then show it
-                                        ToastNotificationManagerCompat.CreateToastNotifier().Show(toast);
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        Console.WriteLine($"Exception {e}");
-                                    }
+                                    OnButtonPressed(new EventArgs());
                                 }
                             }
                         }
@@ -113,6 +88,14 @@ namespace monitorBuddyTray
                     }
                 }
             });
+        }
+
+        public event EventHandler ButtonPressed;
+
+        protected virtual void OnButtonPressed(EventArgs e)
+        {
+            EventHandler handler = ButtonPressed;
+            handler?.Invoke(this, e);
         }
 
         public void Dispose()

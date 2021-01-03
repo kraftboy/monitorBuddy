@@ -211,7 +211,6 @@
       <Version>4.5.0</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup />
   <Target Name="CopyDLLs" AfterTargets="Build">
     <CreateItem Include="lib\$(Configuration)\*.dll">
       <Output TaskParameter="Include" ItemName="DLLsToCopy" />

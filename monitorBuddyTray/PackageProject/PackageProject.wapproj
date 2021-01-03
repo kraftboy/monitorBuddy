@@ -101,6 +101,9 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\assets\snd\chime.wav">
+      <Link>chime.wav</Link>
+    </Content>
     <Content Include="Images\LargeTile.scale-100.png" />
     <Content Include="Images\LargeTile.scale-125.png" />
     <Content Include="Images\LargeTile.scale-150.png" />
