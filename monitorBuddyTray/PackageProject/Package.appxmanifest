@@ -53,7 +53,7 @@
         <!--Register COM CLSID LocalServer32 registry key-->
         <com:Extension Category="windows.comServer">
           <com:ComServer>
-            <com:ExeServer Executable="YourProject\YourProject.exe" Arguments="-ToastActivated" DisplayName="Toast activator">
+            <com:ExeServer Executable="monitorBuddyTray\monitorBuddyTray.exe" Arguments="-ToastActivated" DisplayName="Toast activator">
               <com:Class Id="5EA2AA53-82DB-4DB4-9FEB-836FF482AAC9" DisplayName="Toast activator"/>
             </com:ExeServer>
           </com:ComServer>

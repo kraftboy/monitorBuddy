@@ -95,7 +95,7 @@ namespace monitorBuddyTray
                                     };
 
                                     // And then show it
-                                    DesktopNotificationManagerCompat.CreateToastNotifier().Show(toast);
+                                    ToastNotificationManagerCompat.CreateToastNotifier().Show(toast);
                                 }
                                 catch (Exception e)
                                 {

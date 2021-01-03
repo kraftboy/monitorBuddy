@@ -44,12 +44,17 @@ namespace monitorBuddyTray
 
             }
 
-            DesktopNotificationManagerCompat.RegisterActivator<ToastActivator>();
+            ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompat_OnActivated;
 
             //App is registered and running with identity, handle launch and activation
             return true;
         }
 
+        private static void ToastNotificationManagerCompat_OnActivated(ToastNotificationActivatedEventArgsCompat e)
+        {
+            // nothing to do really
+            // throw new NotImplementedException();
+        }
 
         private static bool registerSparsePackage(string externalLocation, string sparsePkgPath)
         {
