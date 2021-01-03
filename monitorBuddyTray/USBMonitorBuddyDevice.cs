@@ -21,14 +21,14 @@ namespace monitorBuddyTray
         static readonly int interfaceID = 0;
 
         private bool monitoring = true;
-        private UsbContext context = new UsbContext();
+        
 
         public USBMonitorBuddyDevice()
         {
             
         }
 
-        public bool GetDevice()
+        public bool GetDevice(UsbContext context)
         {
             // Dump all devices and descriptor information to console output.
             foreach (var usbDevice in context.List())
@@ -57,56 +57,59 @@ namespace monitorBuddyTray
         {
             await Task.Run(() =>
             {
-                byte[] endpointBufferTmp = new byte[1];
-                while (monitoring)
+                using (var context = new UsbContext())
                 {
-                    try
+                    byte[] endpointBufferTmp = new byte[1];
+                    while (monitoring)
                     {
-                        if (device is null || !device.IsOpen)
+                        try
                         {
-                            if (!GetDevice())
-                                continue;
-                        }
-
-                        int bytesRead = 0;
-                        var result = endpointReader.Read(endpointBuffer, 0, out bytesRead);
-                        if (result == LibUsbDotNet.Error.Success)
-                        {
-                            if (endpointBuffer[0] != endpointBufferTmp[0])
+                            if (device is null || !device.IsOpen)
                             {
-                                endpointBuffer[0] = endpointBufferTmp[0];
-                                Console.WriteLine($"Value changed: {endpointBufferTmp[0]}");
+                                if (!GetDevice(context))
+                                    continue;
+                            }
 
-                                try
+                            int bytesRead = 0;
+                            var result = endpointReader.Read(endpointBuffer, 0, out bytesRead);
+                            if (result == LibUsbDotNet.Error.Success)
+                            {
+                                if (endpointBuffer[0] != endpointBufferTmp[0])
                                 {
-                                    ToastContent toastContent = new ToastContentBuilder()
-                                        .AddText("Device changed!")
-                                        .AddAudio(new ToastAudio()
-                                        {
-                                            Silent = true
-                                        })
-                                        .GetToastContent();
+                                    endpointBuffer[0] = endpointBufferTmp[0];
+                                    Console.WriteLine($"Value changed: {endpointBufferTmp[0]}");
 
-                                    // And create the toast notification
-                                    var toast = new ToastNotification(toastContent.GetXml())
+                                    try
                                     {
-                                        Tag = "ChangedDevice",
-                                        ExpirationTime = DateTime.Now.AddSeconds(10)
-                                    };
+                                        ToastContent toastContent = new ToastContentBuilder()
+                                            .AddText("Device changed!")
+                                            .AddAudio(new ToastAudio()
+                                            {
+                                                Silent = true
+                                            })
+                                            .GetToastContent();
 
-                                    // And then show it
-                                    ToastNotificationManagerCompat.CreateToastNotifier().Show(toast);
-                                }
-                                catch (Exception e)
-                                {
-                                    Console.WriteLine($"Exception {e}");
+                                        // And create the toast notification
+                                        var toast = new ToastNotification(toastContent.GetXml())
+                                        {
+                                            Tag = "ChangedDevice",
+                                            ExpirationTime = DateTime.Now.AddSeconds(10)
+                                        };
+
+                                        // And then show it
+                                        ToastNotificationManagerCompat.CreateToastNotifier().Show(toast);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Console.WriteLine($"Exception {e}");
+                                    }
                                 }
                             }
                         }
-                    }
-                    catch (Exception e)
-                    {
-                        device.Close();
+                        catch (Exception e)
+                        {
+                            device.Close();
+                        }
                     }
                 }
             });

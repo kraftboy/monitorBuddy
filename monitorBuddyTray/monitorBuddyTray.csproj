@@ -55,6 +55,10 @@
     <ApplicationManifest>monitorBuddyTray.exe.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Audio.EndPoint.Controller.Wrapper, Version=2.0.7666.41613, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\dev\AudioEndPointLibrary\bin\x86\Debug\Audio.EndPoint.Controller.Wrapper.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -83,15 +87,13 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ExecutionMode.cs" />
-    <Compile Include="StartUp.cs" />
-    <Compile Include="ToastActivator.cs" />
+    <Compile Include="AudioMBDeviceManager.cs" />
     <Compile Include="USBMonitorBuddyDevice.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Dummy.xaml.cs">
-      <DependentUpon>Dummy.xaml</DependentUpon>
+    <Compile Include="MonitorBuddyTrayApp.xaml.cs">
+      <DependentUpon>MonitorBuddyTrayApp.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MonitorBuddyTrayApp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -124,7 +126,7 @@
     <Resource Include="resources\tray.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Dummy.xaml">
+    <Page Include="MonitorBuddyTrayApp.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -138,11 +140,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>AudioEndPointLibrary.pdb</TargetPath>
     </ContentWithTargetPath>
-        <ContentWithTargetPath Include="lib\Debug\libusb-1.0.dll">
+    <ContentWithTargetPath Include="lib\Debug\libusb-1.0.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>libusb-1.0.dll</TargetPath>
     </ContentWithTargetPath>
-        <ContentWithTargetPath Include="lib\Debug\libusb-1.0.pdb">
+    <ContentWithTargetPath Include="lib\Debug\libusb-1.0.pdb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>libusb-1.0.pdb</TargetPath>
     </ContentWithTargetPath>
@@ -156,11 +158,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>AudioEndPointLibrary.pdb</TargetPath>
     </ContentWithTargetPath>
-        <ContentWithTargetPath Include="lib\Release\libusb-1.0.dll">
+    <ContentWithTargetPath Include="lib\Release\libusb-1.0.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>libusb-1.0.dll</TargetPath>
     </ContentWithTargetPath>
-        <ContentWithTargetPath Include="lib\Release\libusb-1.0.pdb">
+    <ContentWithTargetPath Include="lib\Release\libusb-1.0.pdb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>libusb-1.0.pdb</TargetPath>
     </ContentWithTargetPath>
