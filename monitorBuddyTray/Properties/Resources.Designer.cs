@@ -63,9 +63,19 @@ namespace monitorBuddyTray.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon TrayIcon {
+        internal static System.Drawing.Icon mbicon {
             get {
-                object obj = ResourceManager.GetObject("TrayIcon", resourceCulture);
+                object obj = ResourceManager.GetObject("mbicon", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon mbicon_disconnected {
+            get {
+                object obj = ResourceManager.GetObject("mbicon_disconnected", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
