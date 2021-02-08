@@ -10,17 +10,37 @@ using Windows.Management;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Windows.UI.Notifications;
 using System.Management;
+using System.Runtime.InteropServices;
 
 namespace monitorBuddyTray
 {
     class USBMonitorBuddyDevice : IDisposable
     {
+
+        public enum EButton
+        {
+            ButtonOne,
+            ButtonTwo,
+            DialButton
+        };
+
+        public class ButtonEventArgs : EventArgs
+        {
+            public EButton? buttonPressed = null;
+        };
+
+        public class DialRotationEventArgs : EventArgs
+        {
+            public long dialChange = 0;
+        };
+
         UsbEndpointReader endpointReader = null;
 
         IUsbDevice device = null;
         IUsbDevice monitorBuddyDevice = null;
-        byte[] endpointBuffer = new byte[1];
-        int endpointBufferSize = 1;
+        
+        static readonly int endpointBufferSize = 7;
+        byte[] endpointBuffer = new byte[endpointBufferSize];
 
         static readonly string mfrName = "sirsonic.com";
         static readonly int interfaceID = 0;
@@ -64,11 +84,11 @@ namespace monitorBuddyTray
 
         public async Task MonitorEndpoint()
         {
-            await Task.Run(async () => 
+            await Task.Run(async () =>
             {
                 using (var context = new UsbContext())
                 {
-                    byte[] endpointBufferTmp = new byte[1];
+                    byte[] endpointBufferTmp = new byte[endpointBufferSize];
                     while (monitoring)
                     {
                         try
@@ -77,37 +97,74 @@ namespace monitorBuddyTray
                             {
                                 bool deviceFound = await GetDevice(context);
                                 if (deviceFound)
+                                {
+                                    OnUSBConnectedEvent(true);
+                                }
+                                else
+                                {
+                                    OnUSBConnectedEvent(false);
                                     continue;
-
-                                OnUSBConnectedEvent(true);
+                                }
                             }
 
                             int bytesRead = 0;
-                            var result = endpointReader.Read(endpointBuffer, 50, out bytesRead);
+                            var result = endpointReader.Read(endpointBufferTmp, 100, out bytesRead);
                             if (result == LibUsbDotNet.Error.Success)
                             {
-                                OnUSBConnectedEvent(true);
-
-                                if (endpointBuffer[0] != endpointBufferTmp[0] && endpointBuffer[0] == 1)
+                                if (!endpointBufferTmp.SequenceEqual(endpointBuffer))
                                 {
-                                    OnButtonPressed(new EventArgs());
+                                    // todo make this button push check more legible/general
+                                    if (endpointBufferTmp[0] != endpointBuffer[0] && endpointBufferTmp[0] != 0)
+                                    {
+                                        OnButtonPressed(ButtonOnePressed);
+                                    }
+                                    if (endpointBufferTmp[1] != endpointBuffer[1] && endpointBufferTmp[1] != 0)
+                                    {
+                                        OnButtonPressed(ButtonTwoPressed);
+                                    }
+                                    if (endpointBufferTmp[2] != endpointBuffer[2] && endpointBufferTmp[2] != 0)
+                                    {
+                                        OnButtonPressed(DialButtonPressed);
+                                    }
+                                    if (endpointBufferTmp[3] != endpointBuffer[3])
+                                    {
+                                        var currentDialValue = BitConverter.ToInt32(endpointBuffer, 3);
+                                        var newDialValue = BitConverter.ToInt32(endpointBufferTmp, 3);
+                                        var dialDiff = newDialValue - currentDialValue;
+                                        OnDialChanged(new DialRotationEventArgs() { dialChange = dialDiff });
+                                    }
+
+                                    // save state
+                                    endpointBufferTmp.CopyTo(endpointBuffer, 0);
                                 }
                             }
+                            
                         }
                         catch (Exception e)
                         {
                             OnUSBConnectedEvent(false);
-                            device.Close();
+                            if (device != null)
+                                device.Close();
                         }
                     }
                 }
             });
         }
 
-        public event EventHandler ButtonPressed;
-        protected virtual void OnButtonPressed(EventArgs e)
+
+        public event EventHandler ButtonOnePressed;
+        public event EventHandler ButtonTwoPressed;
+        public event EventHandler DialButtonPressed;
+
+        protected virtual void OnButtonPressed(EventHandler handler)
         {
-            EventHandler handler = ButtonPressed;
+            handler?.Invoke(this, EventArgs.Empty);
+        }
+
+        public event EventHandler DialChanged;
+        protected virtual void OnDialChanged(DialRotationEventArgs e)
+        {
+            EventHandler handler = DialChanged;
             handler?.Invoke(this, e);
         }
 
@@ -115,6 +172,7 @@ namespace monitorBuddyTray
         {
             public bool connected = false;
         }
+
         public event EventHandler USBConnectionChange;
         private void OnUSBConnectedEvent(bool connected)
         {

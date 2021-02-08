@@ -1,5 +1,5 @@
 ---------------------------------------------------------------------------
-NCDrill File Report For: MonitorBuddy.CMPcbDoc   2020-12-30  3:30:02 PM
+NCDrill File Report For: MonitorBuddy.CMPcbDoc   2021-01-23  10:20:27 PM
 ---------------------------------------------------------------------------
 
 Layer Pair : Top Layer to Bottom Layer
@@ -8,15 +8,15 @@ ASCII SlotHoles File : MonitorBuddy-SlotHoles.TXT
 
 Tool         Hole Size           Hole Type     Hole Count Plated       Tool Travel
 ---------------------------------------------------------------------------
-T1        28mil (0.7112mm)         Round          2                0.14 Inch (3.56 mm)
-T2        39.37mil (1mm)           Round          5                1.02 Inch (25.80 mm)
-T3        40mil (1.016mm)          Round          29               3.30 Inch (83.82 mm)
-T4        43.31mil (1.10007mm)     Round          4                0.60 Inch (15.21 mm)
-T5        50mil (1.27mm)           Round          3                0.20 Inch (5.08 mm)
-T6        94.49mil (2.40005mm)     Round          4                6.23 Inch (158.24 mm)
-T7        108.27mil (2.75006mm)    Round          1                0.00 Inch (0.00 mm)
-T8        108.27mil (2.75006mm)    Slot           1                287.87 Inch (7311.92 mm)
+T1        10mil (0.254mm)          Round          5                0.20 Inch (5.09 mm)
+T2        28mil (0.7112mm)         Round          11               3.03 Inch (76.89 mm)
+T3        30mil (0.762mm)          Round          3                0.20 Inch (5.08 mm)
+T4        39.37mil (1mm)           Round          9                2.33 Inch (59.10 mm)
+T5        40mil (1.016mm)          Round          34               5.22 Inch (132.71 mm)
+T6        53.15mil (1.35001mm)     Round          2                0.28 Inch (7.15 mm)
+T7        94.49mil (2.40005mm)     Round          4                7.00 Inch (177.80 mm)
+T8        78.74mil (2mm)           Slot           2         NPTH   289.08 Inch (7342.73 mm)
 ---------------------------------------------------------------------------
-Totals                                            49               299.36 Inch (7603.63 mm)
+Totals                                            70               307.34 Inch (7806.56 mm)
 
 Total Processing Time (hh:mm:ss) : 00:00:00

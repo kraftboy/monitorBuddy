@@ -13,6 +13,7 @@
 MonitorBuddyApp myMonitorBuddy;
 
 void setup() {
+    cli();
     myMonitorBuddy.init();
 }
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Toolkit.Uwp.Notifications;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -19,6 +20,10 @@ namespace monitorBuddyTray
         private ContextMenu contextMenu = null;
         private USBMonitorBuddyDevice monitorBuddyDevice = null;
         private AudioMBDeviceManager monitorBuddyAudioDeviceManager = null;
+        private MenuItem playDeviceRotationMenu;
+        private MenuItem inputDeviceRotationMenu;
+
+        private readonly string kRegistryAppName = "MonitorBuddy";
 
         public MonitorBuddyTrayApp()
         {
@@ -30,8 +35,10 @@ namespace monitorBuddyTray
             // for icon changes
             monitorBuddyDevice.USBConnectionChange += MonitorBuddyDevice_USBConnectionChange; ;
 
-            // hook up the device change to the button from the usb device
-            monitorBuddyDevice.ButtonPressed += monitorBuddyAudioDeviceManager.ChangeDevice;
+            // hook up the device change to the button from the usb device, we can make this configurable later
+            monitorBuddyDevice.ButtonOnePressed += monitorBuddyAudioDeviceManager.ChangePlayDevice;
+            monitorBuddyDevice.ButtonTwoPressed += monitorBuddyAudioDeviceManager.ChangeRecordDevice;
+            monitorBuddyDevice.DialChanged += monitorBuddyAudioDeviceManager.ChangeVolume;
 
             _ = monitorBuddyDevice.MonitorEndpoint();
 
@@ -50,44 +57,58 @@ namespace monitorBuddyTray
                 Header = "Exit"
             };
 
-            MenuItem deviceRotationItem = new MenuItem
+            playDeviceRotationMenu = new MenuItem
             {
-                Header = "Device Rotation"
+                Header = "Play Device Rotation"
             };
 
-            foreach(var device in monitorBuddyAudioDeviceManager.AudioDevices)
+            inputDeviceRotationMenu = new MenuItem
             {
-                var deviceMenuItem = new MenuItem
-                {
-                    Header = device.Name,
-                    IsCheckable = true,
-                    IsChecked = device.InRotation,
-                    StaysOpenOnClick = true,
-                    DataContext = device.Id
-                };
+                Header = "Input Device Rotation"
+            };
 
-                deviceMenuItem.Checked += DeviceMenuItem_Checked;
-                deviceMenuItem.Unchecked += DeviceMenuItem_Unchecked;
-
-                deviceRotationItem.Items.Add(deviceMenuItem);
-            }
+            monitorBuddyAudioDeviceManager.DevicesChanged += BuildDeviceMenus;
+            monitorBuddyAudioDeviceManager.RefreshDevices();
 
             var chimeOnChangeItem = new MenuItem
             {
-                Header = "Notification Snd",
+                Header = "Notification Sound",
                 IsCheckable = true,
                 IsChecked = monitorBuddyAudioDeviceManager.PlayChimeOnChange,
             };
 
-            chimeOnChangeItem.Checked += monitorBuddyAudioDeviceManager.ChimeOnChangeItem_Checked;
-            chimeOnChangeItem.Unchecked += monitorBuddyAudioDeviceManager.ChimeOnChangeItem_Unchecked;
+            var runOnStartup = new MenuItem
+            {
+                Header = "Run on Startup",
+                IsCheckable = true,
+                IsChecked = IsStartupSet()
+            };
 
-            deviceRotationItem.SubmenuClosed += DeviceRotationItem_SubmenuClosed;
+            // set sound on change hanlders
+            chimeOnChangeItem.Checked += monitorBuddyAudioDeviceManager.ChimeOnChangeItem_Checked;
+            chimeOnChangeItem.Unchecked += monitorBuddyAudioDeviceManager.ChimeOnChangeItem_Checked;
+
+            // set mb to startup handlers
+            runOnStartup.Checked += RunOnStartup_Check;
+            runOnStartup.Unchecked += RunOnStartup_Check;
+
+            playDeviceRotationMenu.SubmenuClosed += DeviceRotationItem_SubmenuClosed;
+            inputDeviceRotationMenu.SubmenuClosed += DeviceRotationItem_SubmenuClosed;
 
             exitItem.Click += ExitApp;
-            contextMenu.Items.Add(deviceRotationItem);
+            contextMenu.Items.Add(playDeviceRotationMenu);
+            contextMenu.Items.Add(inputDeviceRotationMenu);
             contextMenu.Items.Add(new Separator());
-            contextMenu.Items.Add(chimeOnChangeItem);
+            contextMenu.Items.Add(new MenuItem()
+            {
+                Header = "Preferences",
+                Items =
+                {
+                    chimeOnChangeItem,
+                    runOnStartup
+                }
+            });
+
             contextMenu.Items.Add(exitItem);
             
             // show tray icon
@@ -95,6 +116,45 @@ namespace monitorBuddyTray
 
             App myApp = System.Windows.Application.Current as App;
             myApp.UnhandledException += Application_UnhandledException;
+        }
+
+        private void RunOnStartup_Unchecked(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void RunOnStartup_Checked(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void BuildDeviceMenus(object source, EventArgs args)
+        {
+            playDeviceRotationMenu.Items.Clear();
+            inputDeviceRotationMenu.Items.Clear();
+
+            void BuildRotationMenu(MenuItem parent, List<AudioMBDeviceManager.AudioDeviceMBState> deviceList, bool playDevice)
+            {
+                foreach (var device in deviceList)
+                {
+                    var deviceMenuItem = new MenuItem
+                    {
+                        Header = device.Name,
+                        IsCheckable = true,
+                        IsChecked = device.InRotation,
+                        StaysOpenOnClick = true,
+                        DataContext = device.Id
+                    };
+
+                    deviceMenuItem.Checked += new RoutedEventHandler((s, e) => DeviceMenuItem_PlayDeviceRotation(s, e, playDevice));
+                    deviceMenuItem.Unchecked += new RoutedEventHandler((s, e) => DeviceMenuItem_PlayDeviceRotation(s, e, playDevice));
+
+                    parent.Items.Add(deviceMenuItem);
+                }
+            }
+
+            BuildRotationMenu(playDeviceRotationMenu, monitorBuddyAudioDeviceManager.AudioPlayDevices, true);
+            BuildRotationMenu(inputDeviceRotationMenu, monitorBuddyAudioDeviceManager.AudioInputDevices, false);
         }
 
         private void MonitorBuddyDevice_USBConnectionChange(object sender, EventArgs e)
@@ -126,16 +186,10 @@ namespace monitorBuddyTray
             ExitCommon();
         }
 
-        private void DeviceMenuItem_Checked(object sender, RoutedEventArgs e)
+        private void DeviceMenuItem_PlayDeviceRotation(object sender, RoutedEventArgs e, bool playDevice)
         {
             var menuItem = sender as MenuItem;
-            monitorBuddyAudioDeviceManager.SetInRotationState(menuItem.DataContext as string, true);
-        }
-
-        private void DeviceMenuItem_Unchecked(object sender, RoutedEventArgs e)
-        {
-            var menuItem = sender as MenuItem;
-            monitorBuddyAudioDeviceManager.SetInRotationState(menuItem.DataContext as string, false);
+            monitorBuddyAudioDeviceManager.SetInRotationState(playDevice, menuItem.DataContext as string, e.RoutedEvent == MenuItem.CheckedEvent);
         }
 
         private void ToastNotificationManagerCompat_OnActivated(ToastNotificationActivatedEventArgsCompat e)
@@ -158,5 +212,25 @@ namespace monitorBuddyTray
             System.Windows.Application.Current.Shutdown();
         }
 
+        private void RunOnStartup_Check(object source, RoutedEventArgs args)
+        {
+            SetStartup(args.RoutedEvent == MenuItem.CheckedEvent);
+        }
+
+        private bool IsStartupSet()
+        {
+            RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+            return rk.GetValue(kRegistryAppName) != null;
+        }
+
+        private void SetStartup(bool enabled)
+        {
+            var exePath = Environment.GetCommandLineArgs()[0];
+            RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+            if (enabled)
+                rk.SetValue(kRegistryAppName, exePath);
+            else
+                rk.DeleteValue(kRegistryAppName, false);
+        }
     }
 }

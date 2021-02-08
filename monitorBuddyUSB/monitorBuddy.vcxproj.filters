@@ -13,75 +13,78 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\usbdrv">
-      <UniqueIdentifier>{5c36d92e-7450-4c13-8271-770cad7a085a}</UniqueIdentifier>
+    <Filter Include="Source Files\v-usb">
+      <UniqueIdentifier>{0beca471-dc26-4a70-b17e-d451a54c7af4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="monitorBuddy.ino" />
     <None Include="v-usb\usbdrv\asmcommon.inc">
-      <Filter>Source Files\usbdrv</Filter>
+      <Filter>Source Files\v-usb</Filter>
     </None>
     <None Include="v-usb\usbdrv\usbdrvasm.S">
-      <Filter>Source Files\usbdrv</Filter>
+      <Filter>Source Files\v-usb</Filter>
     </None>
     <None Include="v-usb\usbdrv\usbdrvasm12.inc">
-      <Filter>Source Files\usbdrv</Filter>
+      <Filter>Source Files\v-usb</Filter>
     </None>
     <None Include="v-usb\usbdrv\usbdrvasm15.inc">
-      <Filter>Source Files\usbdrv</Filter>
+      <Filter>Source Files\v-usb</Filter>
     </None>
     <None Include="v-usb\usbdrv\usbdrvasm16.inc">
-      <Filter>Source Files\usbdrv</Filter>
+      <Filter>Source Files\v-usb</Filter>
     </None>
     <None Include="v-usb\usbdrv\usbdrvasm18.inc">
-      <Filter>Source Files\usbdrv</Filter>
+      <Filter>Source Files\v-usb</Filter>
     </None>
     <None Include="v-usb\usbdrv\usbdrvasm18-crc.inc">
-      <Filter>Source Files\usbdrv</Filter>
+      <Filter>Source Files\v-usb</Filter>
     </None>
     <None Include="v-usb\usbdrv\usbdrvasm20.inc">
-      <Filter>Source Files\usbdrv</Filter>
+      <Filter>Source Files\v-usb</Filter>
     </None>
     <None Include="v-usb\usbdrv\usbdrvasm128.inc">
-      <Filter>Source Files\usbdrv</Filter>
+      <Filter>Source Files\v-usb</Filter>
     </None>
     <None Include="v-usb\usbdrv\usbdrvasm165.inc">
-      <Filter>Source Files\usbdrv</Filter>
+      <Filter>Source Files\v-usb</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.monitorBuddy.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="v-usb\usbdrv\oddebug.h">
-      <Filter>Source Files\usbdrv</Filter>
-    </ClInclude>
-    <ClInclude Include="v-usb\usbdrv\usbdrv.h">
-      <Filter>Source Files\usbdrv</Filter>
-    </ClInclude>
-    <ClInclude Include="v-usb\usbdrv\usbportability.h">
-      <Filter>Source Files\usbdrv</Filter>
-    </ClInclude>
     <ClInclude Include="MonitorBuddyApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="__vm\.monitorBuddyUSB.vsarduino.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="v-usb\usbdrv\oddebug.h">
+      <Filter>Source Files\v-usb</Filter>
+    </ClInclude>
     <ClInclude Include="v-usb\usbdrv\usbconfig.h">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\v-usb</Filter>
+    </ClInclude>
+    <ClInclude Include="v-usb\usbdrv\usbdrv.h">
+      <Filter>Source Files\v-usb</Filter>
+    </ClInclude>
+    <ClInclude Include="v-usb\usbdrv\usbportability.h">
+      <Filter>Source Files\v-usb</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="v-usb\usbdrv\oddebug.c">
-      <Filter>Source Files\usbdrv</Filter>
-    </ClCompile>
-    <ClCompile Include="v-usb\usbdrv\usbdrv.c">
-      <Filter>Source Files\usbdrv</Filter>
-    </ClCompile>
     <ClCompile Include="usbFunctionSetup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MonitorBuddyApp.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="v-usb\usbdrv\oddebug.c">
+      <Filter>Source Files\v-usb</Filter>
+    </ClCompile>
+    <ClCompile Include="v-usb\usbdrv\usbdrv.c">
+      <Filter>Source Files\v-usb</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

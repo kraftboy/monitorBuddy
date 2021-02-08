@@ -11,11 +11,18 @@ using Microsoft.Toolkit.Uwp.Notifications;
 using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.UI.Notifications;
+using Keys = System.Windows.Forms.Keys;
+using System.Runtime.InteropServices;
+using System.Windows.Controls;
 
 namespace monitorBuddyTray
 {
     class AudioMBDeviceManager
     {
+
+        [DllImport("user32.dll")]
+        static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, int dwExtraInfo);
+
         public class AudioDeviceMBState
         {
             public string Id;
@@ -25,20 +32,28 @@ namespace monitorBuddyTray
             public IAudioDevice AudioDevice = null;
         };
 
-        private List<AudioDeviceMBState> _devices = new List<AudioDeviceMBState>();
+        private readonly string kPlayDevicesCategory = "audioplaydevices";
+        private readonly string kInputDevicesCategory = "audioinputdevices";
+        private readonly string kSoundOnChimeKey = "sndonchime";
 
-        public List<AudioDeviceMBState> AudioDevices { get { return _devices; } }
+        private List<AudioDeviceMBState> _playDevices = new List<AudioDeviceMBState>();
+        private List<AudioDeviceMBState> _inputDevices = new List<AudioDeviceMBState>();
+
+        public List<AudioDeviceMBState> AudioPlayDevices { get { return _playDevices; } }
+        public List<AudioDeviceMBState> AudioInputDevices { get { return _inputDevices; } }
         public bool PlayChimeOnChange { get; private set; }
-       
 
-        public AudioMBDeviceManager()
+        public event EventHandler DevicesChanged;
+
+        void BuildDeviceList(List<IAudioDevice> audioDevices, List<AudioDeviceMBState> deviceList)
         {
-            List<IAudioDevice> audioPlaybackDevices = AudioController.GetActivePlaybackDevices();
-            foreach(var audioDevice in audioPlaybackDevices)
+            deviceList.Clear();
+
+            foreach (var audioDevice in audioDevices)
             {
-                if(!_devices.Any(x => x.Id == audioDevice.Id))
+                if (!deviceList.Any(x => x.Id == audioDevice.Id))
                 {
-                    _devices.Add(new AudioDeviceMBState()
+                    deviceList.Add(new AudioDeviceMBState()
                     {
                         Id = audioDevice.Id,
                         Name = audioDevice.FriendlyName,
@@ -47,28 +62,85 @@ namespace monitorBuddyTray
                     });
                 }
             }
+        }
 
+        public void RefreshDevices()
+        {
+            BuildDeviceList(AudioController.GetActivePlaybackDevices(), _playDevices);
+            BuildDeviceList(AudioController.GetActiveRecordingDevices(), _inputDevices);
+            FetchSettings();
+            SaveSettings();
+            DevicesChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        public AudioMBDeviceManager()
+        {
             AudioController.DeviceAdded += AudioController_DeviceAdded;
             AudioController.DeviceRemoved += AudioController_DeviceRemoved;
             AudioController.DeviceDefaultChanged += AudioController_DeviceDefaultChanged;
-
-            FetchSettings();
-            SaveSettings();
+        }
+        
+        public void ChangeVolume(object source, EventArgs args)
+        {
+            var dialRotationArgs = args as USBMonitorBuddyDevice.DialRotationEventArgs;
+            var volDiff = dialRotationArgs.dialChange;
+            var upOrDown = volDiff < 0 ? (byte)Keys.VolumeDown : (byte)Keys.VolumeUp;
+            volDiff = Math.Abs(volDiff);
+            while (volDiff > 0)
+            {
+                keybd_event(upOrDown, 0, 0, 0); // change volume
+                volDiff--;
+            }
         }
 
-        public void ChangeDevice(object source, EventArgs args)
+        public void ChangePlayDevice(object source, EventArgs args)
         {
+            ChangeDevice(AudioController.GetActivePlaybackDevices(), _playDevices);
+        }
+
+        public void ChangeRecordDevice(object source, EventArgs args)
+        {
+            ChangeDevice(AudioController.GetActiveRecordingDevices(), _inputDevices);
+        }
+
+        public void ChangeDevice(List<IAudioDevice> activeDevices, List<AudioDeviceMBState> deviceMBStateList)
+        {
+            if (deviceMBStateList.Count == 0)
+                return;
+
+            // refresh devices on state list
+            foreach (var device in deviceMBStateList)
+            {
+                try
+                {
+                    device.AudioDevice = activeDevices.Where(x => x.Id == device.Id).First();
+                }
+                catch
+                {
+                    Console.WriteLine($"Couldn't find device {device.Name} in active device list");
+                }
+            }
+
             // get system default
-            var defaultDevice = AudioController.GetActivePlaybackDevices().First(x => x.IsDefault(Role.Console));
+            var mbDeviceStateQueue = new Queue<AudioDeviceMBState>(deviceMBStateList.ToArray());
+            AudioDeviceMBState mbDeviceState = null;
+            do 
+            {
+                mbDeviceState = mbDeviceStateQueue.Dequeue();
+                mbDeviceStateQueue.Enqueue(mbDeviceState);
+            } while (!mbDeviceState.AudioDevice.IsDefault(Role.Console));
 
-            // get the first item after the matching entry in our list
-            var inRotationDevices = _devices.Where(x => x.InRotation).ToList();
-            var nextDeviceIndexer = inRotationDevices.Select((x, y) => new { device = x, i = y })
-                                                .First(x => x.device.Id == defaultDevice.Id);
-            var nextDevice = inRotationDevices[(nextDeviceIndexer.i+1) % inRotationDevices.Count()];
+            AudioDeviceMBState deviceToSetDefault = mbDeviceStateQueue.First();
+            foreach (var device in mbDeviceStateQueue)
+            {
+                if(device.InRotation)
+                {
+                    deviceToSetDefault = device;
+                    break;
+                }
+            }
 
-            var deviceToSetDefault = AudioController.GetActivePlaybackDevices().First(x => x.Id == nextDevice.Id);
-            deviceToSetDefault.SetAsDefault(Role.Console);
+            deviceToSetDefault.AudioDevice.SetAsDefault(Role.Console);
 
             try
             {
@@ -83,7 +155,7 @@ namespace monitorBuddyTray
                 }
 
                 ToastContent toastContent = new ToastContentBuilder()
-                    .AddText($"Device changed: {nextDevice.Name}")
+                    .AddText($"{(_playDevices == deviceMBStateList ? "Device" : "Input device")} changed: {deviceToSetDefault.AudioDevice.FriendlyName}")
                     .AddAudio(toastAudio)
                     .GetToastContent();
 
@@ -102,9 +174,10 @@ namespace monitorBuddyTray
                 Console.WriteLine($"Exception {e}");
             }
         }
-        public void SetInRotationState(string id, bool state)
+        public void SetInRotationState(bool playDevice, string id, bool state)
         {
-            var device = _devices.First(x => x.Id == id);
+            var deviceList = playDevice ? _playDevices : _inputDevices;
+            var device = deviceList.First(x => x.Id == id);
             if(device != null)
             {
                 device.InRotation = state;
@@ -120,60 +193,73 @@ namespace monitorBuddyTray
         {
 
             var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
-            var container = localSettings.CreateContainer("audiodevices", Windows.Storage.ApplicationDataCreateDisposition.Always);
-            foreach (var setting in container.Values)
+
+            void FetchDeviceContainer(string containerName, List<AudioDeviceMBState> deviceList)
             {
-                var savedDevice = _devices.First(x => x.Id == setting.Key);
-                if (savedDevice != null)
+                var deviceContainer = localSettings.CreateContainer(containerName, Windows.Storage.ApplicationDataCreateDisposition.Always);
+                foreach (var setting in deviceContainer.Values)
                 {
-                    savedDevice.InRotation = (bool)setting.Value;
+                    try
+                    {
+                        var savedDevice = deviceList.First(x => x.Id == setting.Key);
+                        if (savedDevice != null)
+                        {
+                            savedDevice.InRotation = (bool)setting.Value;
+                        }
+                    }
+                    catch { }
                 }
             }
 
-            container = localSettings.CreateContainer("preferences", Windows.Storage.ApplicationDataCreateDisposition.Always);
+            FetchDeviceContainer(kPlayDevicesCategory, _playDevices);
+            FetchDeviceContainer(kInputDevicesCategory, _inputDevices);
+
+            var container = localSettings.CreateContainer("preferences", Windows.Storage.ApplicationDataCreateDisposition.Always);
             if (container.Values.ContainsKey("SndOnChime"))
             {
-                PlayChimeOnChange = (bool)container.Values["SndOnChime"];
+                PlayChimeOnChange = (bool)container.Values[kSoundOnChimeKey];
             }
         }
 
         private void SaveSettings()
         {
             var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
-            var container = localSettings.CreateContainer("audiodevices", Windows.Storage.ApplicationDataCreateDisposition.Always);
-            foreach(var device in _devices)
+
+            void SaveDeviceContainer(string containerName, List<AudioDeviceMBState> deviceList)
             {
-                container.Values[device.Id] = device.InRotation;
+                var deviceContainer = localSettings.CreateContainer(containerName, Windows.Storage.ApplicationDataCreateDisposition.Always);
+                foreach (var device in deviceList)
+                {
+                    deviceContainer.Values[device.Id] = device.InRotation;
+                }
             }
 
-            container = localSettings.CreateContainer("preferences", Windows.Storage.ApplicationDataCreateDisposition.Always);
-            container.Values["SndOnChime"] = PlayChimeOnChange;
+            SaveDeviceContainer(kPlayDevicesCategory, _playDevices);
+            SaveDeviceContainer(kInputDevicesCategory, _inputDevices);
+
+            var container = localSettings.CreateContainer("preferences", Windows.Storage.ApplicationDataCreateDisposition.Always);
+            container.Values[kSoundOnChimeKey] = PlayChimeOnChange;
          }
 
         private void AudioController_DeviceDefaultChanged(object sender, DeviceDefaultChangedEvent e)
         {
-            // throw new NotImplementedException();
+            // don't care
+            // RefreshDevices();
         }
 
         private void AudioController_DeviceRemoved(object sender, DeviceRemovedEvent e)
         {
-            // throw new NotImplementedException();
+            RefreshDevices();
         }
 
         private void AudioController_DeviceAdded(object sender, DeviceAddedEvent e)
         {
-            // throw new NotImplementedException();
-        }
-
-        public void ChimeOnChangeItem_Unchecked(object sender, RoutedEventArgs e)
-        {
-            PlayChimeOnChange = false;
-            SaveSettings();
+            RefreshDevices();
         }
 
         public void ChimeOnChangeItem_Checked(object sender, RoutedEventArgs e)
         {
-            PlayChimeOnChange = true;
+            PlayChimeOnChange = e.RoutedEvent == MenuItem.CheckedEvent;
             SaveSettings();
         }
     }
